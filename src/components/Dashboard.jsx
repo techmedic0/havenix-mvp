@@ -1,25 +1,32 @@
-import { supabase } from "../utils/supabaseClient";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../utils/supabaseClient";
+import LandlordDashboard from "./LandlordDashboard";
+import StudentDashboard from "./StudentDashboard";
 
-const Dashboard = () => {
-  const [user, setUser] = useState(null);
+export default function Dashboard({ role }) {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      const { data } = await supabase.auth.getUser();
+
+      if (!data?.user) {
+        navigate("/login");
+      } else {
+        setLoading(false);
+      }
     };
 
-    fetchUser();
-  }, []);
+    if (!role) {
+      fetchUser();
+    } else {
+      setLoading(false);
+    }
+  }, [role, navigate]);
 
-  return (
-    <div>
-      <h2>Welcome, {user?.email || "User"}!</h2>
-      <p>This is your dashboard.</p>
-      <button onClick={() => supabase.auth.signOut()}>Logout</button>
-    </div>
-  );
-};
+  if (loading) return <p>Loading user data...</p>;
 
-export default Dashboard;
+  return role === "landlord" ? <LandlordDashboard /> : <StudentDashboard />;
+}

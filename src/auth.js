@@ -1,10 +1,13 @@
 import { supabase } from "./utils/supabaseClient";
 
 //signup function
-export const signUp = async (email, password) => {
+export const signUp = async (email, password, role) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: { role } //Store role in user metadata
+    }
   });
   if (error) throw error;
   return data;
