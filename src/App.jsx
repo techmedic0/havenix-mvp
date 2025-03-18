@@ -6,6 +6,7 @@ import Dashboard from "./components/Dashboard";
 import AddProperty from "./components/AddProperty";
 import ScrollToTop from "./components/scrollToTop";
 import PropertyDetails from "./components/PropertyDetails";
+import BookingRequest from "./components/BookingRequest";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -16,17 +17,17 @@ export default function App() {
     const fetchUser = async () => {
       setLoading(true);
       const { data, error } = await supabase.auth.getSession();
-
+  
       if (error) {
         console.error("Error fetching session:", error.message);
         setLoading(false);
         return;
       }
-
+  
       const user = data?.session?.user || null;
-      console.log("Fetched user:", user);  // Debugging
-      console.log("User role from metadata:", user?.user_metadata?.role);  // Debugging
-
+      console.log("Fetched user:", user);
+      console.log("User role from metadata:", user?.user_metadata?.role);
+  
       if (user) {
         setUser(user);
         setRole(user.user_metadata?.role || null);
@@ -34,14 +35,14 @@ export default function App() {
         setUser(null);
         setRole(null);
       }
-
+  
       setLoading(false);
     };
-
+  
     fetchUser();
-
-    // Listen for auth state changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+  
+    // Corrected way to set up and unsubscribe
+    const authListener = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         console.log("Auth state changed - User logged in:", session.user);
         setUser(session.user);
@@ -52,10 +53,14 @@ export default function App() {
         setRole(null);
       }
     });
-
-    return () => authListener?.unsubscribe();
+  
+    return () => {
+      if (typeof authListener === "function") {
+        authListener(); // Call the unsubscribe function
+      }
+    };
   }, []);
-
+  
   if (loading) return <p>Loading...</p>;
 
   return (
@@ -66,6 +71,8 @@ export default function App() {
         <Route path="/dashboard" element={user ? <Dashboard role={role} /> : <Navigate to="/" />} />
         <Route path="/add-property" element={user && role === "landlord" ? <AddProperty /> : <Navigate to="/" />} />
         <Route path="/property/:id" element={<PropertyDetails />} />
+        <Route path="/request/:propertyId" element={<BookingRequest />} />
+
       </Routes>
     </Router>
   );

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../utils/supabaseClient";
+import { Link } from "react-router-dom";
+
 import "../styles/PropertyDetails.css"; // ✅ Import CSS separately
 
 export default function PropertyDetails() {
@@ -49,7 +51,8 @@ export default function PropertyDetails() {
       <p><strong>Location:</strong> {property.location || "Unknown"}</p>
       <p><strong>Price:</strong> ${property.price || "N/A"}</p>
       <p><strong>Description:</strong> {property.description || "No description available."}</p>
-      <button className="contact-button">Contact Landlord</button>
+      <Link to={`/request/${property.id}`} className="button">Request Booking</Link>
+
     </div>
   );
 }

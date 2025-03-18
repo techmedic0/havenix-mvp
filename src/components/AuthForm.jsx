@@ -1,77 +1,90 @@
 import { useState } from "react";
-import { signUp, signIn, signOut } from "../auth";
-import "../styles/AuthForm.css"; // ✅ Import CSS correctly
+import { signUp, signIn } from "../auth";
+import "../styles/AuthForm.css"; // Import the updated CSS file
 
-export default function AuthForm() {
+const AuthForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student");
-  const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("student"); // Default role
+  const [isSignUp, setIsSignUp] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleSignUp = async () => {
-    setMessage(""); // Clear previous messages
-    try {
-      await signUp(email, password, role);
-      setMessage("Signup successful! Check your email to confirm.");
-    } catch (error) {
-      setMessage(error.message || "Signup failed. Please try again.");
-    }
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
 
-  const handleLogin = async () => {
-    setMessage("");
     try {
-      await signIn(email, password);
-      setMessage("Login successful");
-    } catch (error) {
-      setMessage(error.message || "Login failed. Please try again.");
+      if (isSignUp) {
+        await signUp(email, password, name, role);
+        alert("Check your email for confirmation.");
+      } else {
+        await signIn(email, password);
+        alert("Successfully signed in!");
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
   return (
     <div className="auth-container">
-      <h1>Authentication</h1>
-
-      <input
-        type="text"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="auth-input"
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="auth-input"
-      />
-
-      <select value={role} onChange={(e) => setRole(e.target.value)} className="auth-select">
-        <option value="student">Student</option>
-        <option value="landlord">Landlord</option>
-      </select>
-
-      <button onClick={handleSignUp} className="auth-btn signup-btn">
-        Signup
+      <h2 className="auth-title">{isSignUp ? "Sign Up" : "Sign In"}</h2>
+      <form className="auth-form" onSubmit={handleSubmit}>
+        {isSignUp && (
+          <>
+            <label htmlFor="name">Name</label>
+            <input
+              id="name"
+              type="text"
+              className="auth-input"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <label htmlFor="role">Role</label>
+            <select
+              id="role"
+              className="auth-select"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="student">Student</option>
+              <option value="landlord">Landlord</option>
+            </select>
+          </>
+        )}
+        <label htmlFor="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          className="auth-input"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          className="auth-input"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit" className="auth-btn">
+          {isSignUp ? "Sign Up" : "Sign In"}
+        </button>
+      </form>
+      {error && <p className="auth-error">{error}</p>}
+      <button className="toggle-btn" onClick={() => setIsSignUp(!isSignUp)}>
+        {isSignUp ? "Already have an account? Sign In" : "Need an account? Sign Up"}
       </button>
-
-      <button onClick={handleLogin} className="auth-btn login-btn">
-        Login
-      </button>
-
-      <button
-        onClick={async () => {
-          await signOut();
-          setMessage("Signed out");
-        }}
-        className="auth-btn signout-btn"
-      >
-        Signout
-      </button>
-
-      <p className="message">{message}</p>
     </div>
   );
-}
+};
+
+export default AuthForm;
