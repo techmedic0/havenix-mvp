@@ -61,17 +61,25 @@ export default function EditPropertyModal({ property, onClose, onUpdate }) {
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Edit Property</h2>
-        <label>Title</label>
-        <input type="text" name="title" value={formData.title} onChange={handleChange} />
+        <div className="clipped">
+          <label>Title</label>
+          <input type="text" name="title" value={formData.title} onChange={handleChange} />
+        </div>
 
-        <label>Location</label>
-        <input type="text" name="location" value={formData.location} onChange={handleChange} />
+        <div className="clipped">
+          <label>Location</label>
+          <input type="text" name="location" value={formData.location} onChange={handleChange} />
+        </div>
 
-        <label>Price</label>
-        <input type="number" name="price" value={formData.price} onChange={handleChange} />
+        <div className="clipped">
+          <label>Price</label>
+          <input type="number" name="price" value={formData.price} onChange={handleChange} />
+        </div>
 
-        <label>Description</label>
-        <textarea name="description" value={formData.description} onChange={handleChange}></textarea>
+        <div className="clipped">
+          <label>Description</label>
+          <textarea name="description" value={formData.description} onChange={handleChange}></textarea>
+        </div>
 
         <div className="modal-buttons">
           <button className="save-button" onClick={handleUpdate} disabled={loadingUpdate}>
