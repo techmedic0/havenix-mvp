@@ -15,7 +15,7 @@
 }
 
 .auth-input {
-  width: 100%;
+  width: 80%;
   padding: 12px;
   margin: 8px 0;
   border: 1px solid #ccc;
@@ -31,9 +31,10 @@
 }
 
 .auth-select {
-  width: 100%;
+  width: 50%;
   padding: 12px;
-  margin: 8px 0;
+  text-align: center;
+  margin: 8px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
